@@ -22,12 +22,24 @@ type Provider interface {
 func NewBigQueryProvider(projectID string, credentialsPath string, loopTime time.Duration) (Provider, error) {
 ```
 where 
-- `prjectID` is the GKE Project identifier
+- `projectID` is the GKE Project identifier
 - `credentialsPath` is the path of the credentials file. The service account credentials
 - `loopTime` is the waitting time to make inserts in the database. 
   The data is stored in a cache and sent every so often
 
 ---
+
+## Getting credentials
+Read [google documentation](https://cloud.google.com/docs/authentication/production#cloud-console) to create the *ServiceAccount* and, a *key*
+Once you have created them, you can share the tables with the service account:
+
+1. Go to table schema, and click on `SHARE` option
+   ![share](images/share.png)
+2. Add a member
+   ![Addmember](images/add_member.png)
+3. Fill the member with the Service Account created and BigQuery>BigQuert Data Editor Role
+   ![member](images/member.png)
+   
 ## License
 
  Copyright 2020 Napptive

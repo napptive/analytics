@@ -15,6 +15,19 @@
  */
 package analytics
 
+/*
+1. Create a service account and get credentials
+2. Create a bigquery schema in a project
+3. Create login table (timestamp TIMESTAMP, userID STRING, operation STRING)
+4. Create operation table (timestamp TIMESTAMP, userID STRING, method STRING)
+5. Allow access to serviceAccount
+
+Environment variables:
+RUN_IT_TEST: provider
+CREDENTIALS_PATH: <path_to_credentials_file>
+PROJECT_ID: project
+ */
+
 import (
 	"github.com/napptive/analytics/pkg/utils"
 	"github.com/onsi/ginkgo"

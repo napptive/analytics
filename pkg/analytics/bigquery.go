@@ -31,7 +31,27 @@ const (
 	schema         = "analytics"
 	loginTable     = "login"
 	operationTable = "operation"
+	databaseTimeout = time.Second * 5
 )
+
+type BigQueryConfig struct {
+	projectID string
+	credentialsPath string
+	loopTime time.Duration
+}
+
+func (bqc *BigQueryConfig) IsValid() error  {
+	if bqc.projectID == "" {
+		return nerrors.NewFailedPreconditionError("projectID mus be filled")
+	}
+	if bqc.credentialsPath == "" {
+		return nerrors.NewFailedPreconditionError("credentials path must be informed")
+	}
+	if bqc.loopTime <= 0 {
+		return nerrors.NewFailedPreconditionError("loopTime mus be filled")
+	}
+	return nil
+}
 
 type BigQueryProvider struct {
 	Client *bigquery.Client
@@ -53,16 +73,22 @@ type BigQueryProvider struct {
 }
 
 // NewBigQueryProvider
-func NewBigQueryProvider(projectID string, credentialsPath string, loopTime time.Duration) (Provider, error) {
-	client, err := bigquery.NewClient(context.Background(), projectID,
-		option.WithCredentialsFile(credentialsPath))
+func NewBigQueryProvider(cfg BigQueryConfig) (Provider, error) {
+
+	// validate config
+	if err := cfg.IsValid(); err != nil {
+		return nil, err
+	}
+
+	client, err := bigquery.NewClient(context.Background(), cfg.projectID,
+		option.WithCredentialsFile(cfg.credentialsPath))
 	if err != nil {
 		return nil, err
 	}
 	provider := &BigQueryProvider{
 		Client:     client,
 		loginCache: []entities.LoginData{},
-		sendTime:   loopTime,
+		sendTime:   cfg.loopTime,
 	}
 
 	// start the loop
@@ -98,15 +124,20 @@ func (bq *BigQueryProvider) SendOperationData(data entities.OperationData) error
 // SendLoginCache inserts all the data stored in login cache in the database
 func (bq *BigQueryProvider) SendLoginCache() error {
 	bq.loginMutex.Lock()
-	defer bq.loginMutex.Unlock()
+	toSend := bq.loginCache
+	bq.loginCache = []entities.LoginData{}
+	bq.loginMutex.Unlock()
 
-	if len(bq.loginCache) == 0 {
+	if len(toSend) == 0 {
 		return nil
 	}
 
 	i := bq.Client.Dataset(schema).Table(loginTable).Inserter()
 
-	err := i.Put(context.Background(), bq.loginCache)
+	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
+	defer cancel()
+
+	err := i.Put(ctx, toSend)
 	if err != nil {
 		return nerrors.NewInternalErrorFrom(err, "error sending login data")
 	}
@@ -118,15 +149,19 @@ func (bq *BigQueryProvider) SendLoginCache() error {
 // SendOperationCache inserts all the data stored in operation cache in the database
 func (bq *BigQueryProvider) SendOperationCache() error {
 	bq.opMutex.Lock()
-	defer bq.opMutex.Unlock()
+	toSend := bq.opCache
+	bq.opCache = []entities.OperationData{}
+	bq.opMutex.Unlock()
 
-	if len(bq.opCache) == 0 {
+	if len(toSend) == 0 {
 		return nil
 	}
-
 	i := bq.Client.Dataset(schema).Table(operationTable).Inserter()
 
-	err := i.Put(context.Background(), bq.opCache)
+	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
+	defer cancel()
+
+	err := i.Put(ctx, toSend)
 	if err != nil {
 		return nerrors.NewInternalErrorFrom(err, "error sending operation")
 	}

@@ -60,15 +60,19 @@ var _ = ginkgo.Describe("Provider test", func() {
 
 	ginkgo.It("should be able to add a invitation", func() {
 		loopTime := time.Second * 2
-		provider, err := NewBigQueryProvider(projectID, credentialPath, loopTime)
+		provider, err := NewBigQueryProvider( BigQueryConfig{
+			projectID:       projectID,
+			credentialsPath: credentialPath,
+			loopTime:        loopTime,
+		})
 		gomega.Expect(provider).ShouldNot(gomega.BeNil())
 		gomega.Expect(err).To(gomega.Succeed())
 
 		for i:= 0; i<= 10; i ++ {
-			err = provider.SendLoginData(utils.GenerateLoginData())
+			err = provider.SendLoginData(utils.GenerateTestLoginData())
 			gomega.Expect(err).To(gomega.Succeed())
 
-			err = provider.SendOperationData(utils.GenerateOperationData())
+			err = provider.SendOperationData(utils.GenerateTestOperationData())
 			gomega.Expect(err).To(gomega.Succeed())
 
 			time.Sleep(loopTime / 3)

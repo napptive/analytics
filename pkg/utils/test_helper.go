@@ -32,7 +32,7 @@ func RunIntegrationTests(id string) bool {
 }
 
 // GenerateLoginData returns a random LoginData
-func GenerateLoginData() entities.LoginData {
+func GenerateTestLoginData() entities.LoginData {
 	return entities.LoginData{
 		Timestamp: time.Now(),
 		UserID:    xid.New().String(),

@@ -41,7 +41,7 @@ func GenerateTestLoginData() entities.LoginData {
 }
 
 // GenerateOperationData returns a random OperationData
-func GenerateOperationData() entities.OperationData {
+func GenerateTestOperationData() entities.OperationData {
 	return entities.OperationData{
 		Timestamp: time.Now(),
 		UserID:    xid.New().String(),

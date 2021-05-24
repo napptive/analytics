@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package entities
 
-package config
+import "time"
 
-import (
-	"github.com/rs/zerolog/log"
-)
-
-// Config structure with all the options required by the service and service components.
-type Config struct {
-	Version string
-	Commit  string
-	Debug   bool
+// LoginData with the login info stored
+type LoginData struct {
+	// Timestamp with the event timestamp
+	Timestamp time.Time
+	// UserID with the user identifier
+	UserID string
+	// Method with the login source (PAT, CLI, Web)
+	Method string
 }
 
-// IsValid checks if the configuration options are valid.
-func (c *Config) IsValid() error {
-	return nil
+// OperationData with the operation info stored
+type OperationData struct {
+	// Timestamp with the event timestamp
+	Timestamp time.Time
+	// UserID with the user identifier
+	UserID string
+	// Operation with the name of the GRPC method
+	Operation string
 }
 
-// Print the configuration using the application logger.
-func (c *Config) Print() {
-	// Use logger to print the configuration
-	log.Info().Str("version", c.Version).Str("commit", c.Commit).Msg("Orcha config")
-}

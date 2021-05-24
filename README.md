@@ -1,51 +1,33 @@
-# go-template
-Napptive golang template
+# Analytics
+Analytics is a Napptive library to monitoring operational data
 
-The purpose of this project is to provide a common template to develop Golang microservices in Napptive.
+This lib allows you to send data to a provider for monitoring tasks
 
-## Layout structure
-
-The layout structure is based on the default golang-template layout.
-
-https://github.com/golang-standards/project-layout
-
-## Usage
-
-A make file is provided with the following targets:
-
-* clean: Remove build files
-* test: Run the available tests
-* build: Build the files for your local environment
-* build-darwin: Build the files for MacOS
-* build-linux: Build the files for Linux
-* k8s: Generate the Kubernetes deployment files
-* docker-prep: Prepare the Dockerfile folder with all the extra files
-* docker-build: Build the Dockerfile locally
-* docker-push: Push the image to the selected repository. You must make login before to push the docker image.
-
----
-**Important**
-
-If you are developing with MacOS/Darwin, you must install gnu-sed.
+For now, only BigQuery provider is implemented, but it is too easy to add providers. Just implementing the interface:
 
 ```
-brew install gnu-sed
+// Provider with an interface that defines the monitoring provider methods
+type Provider interface {
+	// SendLoginData puts a login in the database
+	SendLoginData(data entities.LoginData) error
+	// SendOperationData puts an operation data in the database
+	SendOperationData(data entities.OperationData) error
+}
 ```
+
+## BigQuery provider
+
+1.Create a client
+```
+func NewBigQueryProvider(projectID string, credentialsPath string, loopTime time.Duration) (Provider, error) {
+```
+where 
+- `prjectID` is the GKE Project identifier
+- `credentialsPath` is the path of the credentials file. The service account credentials
+- `loopTime` is the waitting time to make inserts in the database. 
+  The data is stored in a cache and sent every so often
+
 ---
-
-## Integration with Code Climate
-
-This template is integrated with the Code Climate service.
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/d426ab46dd6c71fcb93b/maintainability)](https://codeclimate.com/repos/5f8e9d4ccdd59e0541004d1a/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d426ab46dd6c71fcb93b/test_coverage)](https://codeclimate.com/repos/5f8e9d4ccdd59e0541004d1a/test_coverage)
-
-
-## Integration with Github Actions
-
-This template is integrated with GitHub Actions. You need to add the secret `CodeClimateRerporterID` in the repository settings.
-
-![Check changes in the Main branch](https://github.com/napptive/go-template/workflows/Check%20changes%20in%20the%20Main%20branch/badge.svg)
-
 ## License
 
  Copyright 2020 Napptive

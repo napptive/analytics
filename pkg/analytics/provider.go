@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package config
+package analytics
 
 import (
-	"testing"
-
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	"github.com/napptive/analytics/pkg/entities"
 )
 
-func TestConfigPackage(t *testing.T) {
-	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "Config package suite")
+// Provider with an interface that defines the monitoring provider methods
+type Provider interface {
+	// SendLoginData puts a login in the database
+	SendLoginData(data entities.LoginData) error
+	// SendOperationData puts an operation data in the database
+	SendOperationData(data entities.OperationData) error
 }
 

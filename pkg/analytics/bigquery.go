@@ -40,6 +40,14 @@ type BigQueryConfig struct {
 	loopTime time.Duration
 }
 
+func NewBigQueryConfig (projectId string, credentialsPath string, loopTime time.Duration) BigQueryConfig {
+	return BigQueryConfig{
+		projectID:       projectId,
+		credentialsPath: credentialsPath,
+		loopTime:        loopTime,
+	}
+}
+
 func (bqc *BigQueryConfig) IsValid() error  {
 	if bqc.projectID == "" {
 		return nerrors.NewFailedPreconditionError("projectID mus be filled")

@@ -26,19 +26,21 @@ Environment variables:
 RUN_IT_TEST: provider
 CREDENTIALS_PATH: <path_to_credentials_file>
 PROJECT_ID: project
- */
+*/
 
 import (
+	"github.com/napptive/analytics/pkg/config"
 	"github.com/napptive/analytics/pkg/utils"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/rs/zerolog/log"
-	"os"
 	"time"
 )
 
 var credentialPath string // = "/Users/cdelope/tmp/carmentest-d56ccf2df548.json"
-var projectID string // = "carmentest"
+var projectID string      // = "carmentest"
+var provider Provider
+var proError error
 
 var _ = ginkgo.Describe("Provider test", func() {
 
@@ -47,28 +49,19 @@ var _ = ginkgo.Describe("Provider test", func() {
 		return
 	}
 
-	credentialPath = os.Getenv("CREDENTIALS_PATH")
-	if credentialPath == "" {
-		log.Fatal().Msg("CREDENTIALS_PATH not found")
-	}
-
-	projectID = os.Getenv("PROJECT_ID")
-	if projectID == "" {
-		log.Fatal().Msg("PROJECT_ID not found")
-	}
-
+	// Create provider
+	cfg, err := utils.GetBigQueryConfig()
+	gomega.Expect(err).Should(gomega.Succeed())
+	provider, proError = NewBigQueryProvider(*cfg)
+	gomega.Expect(proError).Should(gomega.Succeed())
 
 	ginkgo.It("should be able to add a invitation", func() {
-		loopTime := time.Second * 2
-		provider, err := NewBigQueryProvider( BigQueryConfig{
-			projectID:       projectID,
-			credentialsPath: credentialPath,
-			loopTime:        loopTime,
-		})
+		loopTime := time.Second * 1
+		provider, err = NewBigQueryProvider(config.NewBigQueryConfig(cfg.ProjectID, cfg.CredentialsPath, cfg.LoopTime))
 		gomega.Expect(provider).ShouldNot(gomega.BeNil())
 		gomega.Expect(err).To(gomega.Succeed())
 
-		for i:= 0; i<= 10; i ++ {
+		for i := 0; i <= 10; i++ {
 			err = provider.SendLoginData(utils.GenerateTestLoginData())
 			gomega.Expect(err).To(gomega.Succeed())
 

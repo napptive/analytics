@@ -16,8 +16,12 @@
 package utils
 
 import (
+	"context"
+	"github.com/napptive/analytics/pkg/config"
 	"github.com/napptive/analytics/pkg/entities"
+	"github.com/napptive/nerrors/pkg/nerrors"
 	"github.com/rs/xid"
+	"google.golang.org/grpc/metadata"
 	"os"
 	"time"
 )
@@ -47,4 +51,24 @@ func GenerateTestOperationData() entities.OperationData {
 		UserID:    xid.New().String(),
 		Operation: "Operation",
 	}
+}
+
+func CreateTestFullContext() context.Context {
+	md := metadata.New(map[string]string{"user_id": xid.New().String()})
+	return metadata.NewOutgoingContext(context.Background(), md)
+}
+
+func GetBigQueryConfig() (*config.BigQueryConfig, error) {
+	var credentialPath = os.Getenv("CREDENTIALS_PATH")
+	if credentialPath == "" {
+		return nil, nerrors.NewInternalError("CREDENTIALS_PATH not found")
+	}
+
+	var projectID = os.Getenv("PROJECT_ID")
+	if projectID == "" {
+		return nil, nerrors.NewInternalError("PROJECT_ID not found")
+	}
+	bqConfig := config.NewBigQueryConfig(projectID, credentialPath, time.Second)
+
+	return &bqConfig, nil
 }

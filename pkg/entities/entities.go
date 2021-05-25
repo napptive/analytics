@@ -36,4 +36,3 @@ type OperationData struct {
 	// Operation with the name of the GRPC method
 	Operation string
 }
-

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Napptive
+ * Copyright 2021 Napptive
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package analytics
+package interceptors
 
 import (
-	"github.com/napptive/analytics/pkg/entities"
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
+	"testing"
 )
 
-// Provider with an interface that defines the monitoring provider methods
-type Provider interface {
-	// SendLoginData puts a login in the database
-	SendLoginData(data entities.LoginData) error
-	// SendOperationData puts an operation data in the database
-	SendOperationData(data entities.OperationData) error
+func TestInterceptorr(t *testing.T) {
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Interceptors Suite")
 }

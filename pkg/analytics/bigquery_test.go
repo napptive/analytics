@@ -37,8 +37,6 @@ import (
 	"time"
 )
 
-var credentialPath string // = "/Users/cdelope/tmp/carmentest-d56ccf2df548.json"
-var projectID string      // = "carmentest"
 var provider Provider
 var proError error
 

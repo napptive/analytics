@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/napptive/nerrors/pkg/nerrors"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -30,4 +31,13 @@ func (bqc *BigQueryConfig) IsValid() error {
 		return nerrors.NewFailedPreconditionError("loopTime mus be filled")
 	}
 	return nil
+}
+
+func (bqc *BigQueryConfig) Print () {
+	// Use logger to print the configuration
+	log.Info().
+		Str("ProjectID", bqc.ProjectID).
+		Str("CredentialsPath", bqc.CredentialsPath).
+		Dur("LoopTime",bqc.LoopTime).
+		Msg("BigQuery config")
 }

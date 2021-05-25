@@ -63,8 +63,8 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 		lis = bufconn.Listen(bufSize)
 
 		// Create provider
-		cfg, err := utils.GetBigQueryConfig()
-		gomega.Expect(err).Should(gomega.Succeed())
+		cfg := utils.GetBigQueryConfig()
+
 		provider, proError = analytics.NewBigQueryProvider(*cfg)
 		gomega.Expect(proError).Should(gomega.Succeed())
 
@@ -98,7 +98,7 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 
 	ginkgo.It("should be able add ", func() {
 
-		newCtx := utils.CreateTestFullContext()
+		newCtx := utils.GenerateTestFullContext()
 
 		// Create a context with the token
 		request := grpc_ping_go.PingRequest{RequestNumber: 1}

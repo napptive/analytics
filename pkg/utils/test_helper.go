@@ -19,7 +19,7 @@ import (
 	"context"
 	"github.com/napptive/analytics/pkg/config"
 	"github.com/napptive/analytics/pkg/entities"
-	"github.com/napptive/nerrors/pkg/nerrors"
+	"github.com/onsi/gomega"
 	"github.com/rs/xid"
 	"google.golang.org/grpc/metadata"
 	"os"
@@ -49,26 +49,39 @@ func GenerateTestOperationData() entities.OperationData {
 	return entities.OperationData{
 		Timestamp: time.Now(),
 		UserID:    xid.New().String(),
-		Operation: "Operation",
+		Operation: "PEPE",
 	}
 }
 
-func CreateTestFullContext() context.Context {
+func GenerateTestOperation() entities.Operation {
+	return entities.Operation{
+		Timestamp: time.Now(),
+		UserID:    xid.New().String(),
+		Operation: "test/operation",
+	}
+}
+
+func GenerateTestFullContext() context.Context {
 	md := metadata.New(map[string]string{"user_id": xid.New().String()})
 	return metadata.NewOutgoingContext(context.Background(), md)
 }
 
-func GetBigQueryConfig() (*config.BigQueryConfig, error) {
+func GetBigQueryConfig() *config.BigQueryConfig {
 	var credentialPath = os.Getenv("CREDENTIALS_PATH")
-	if credentialPath == "" {
-		return nil, nerrors.NewInternalError("CREDENTIALS_PATH not found")
-	}
+	gomega.Expect(credentialPath).ShouldNot(gomega.BeEmpty())
 
 	var projectID = os.Getenv("PROJECT_ID")
-	if projectID == "" {
-		return nil, nerrors.NewInternalError("PROJECT_ID not found")
-	}
-	bqConfig := config.NewBigQueryConfig(projectID, credentialPath, time.Second)
+	gomega.Expect(projectID).ShouldNot(gomega.BeEmpty())
 
-	return &bqConfig, nil
+	var schema = os.Getenv("SCHEMA")
+	gomega.Expect(schema).ShouldNot(gomega.BeEmpty())
+
+	var table = os.Getenv("TABLE")
+	gomega.Expect(table).ShouldNot(gomega.BeEmpty())
+
+
+	bqConfig := config.NewBigQueryConfig(projectID, schema, table, credentialPath, time.Second)
+
+	return &bqConfig
 }
+

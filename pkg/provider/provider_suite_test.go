@@ -1,4 +1,4 @@
-package analytics
+package provider
 
 import (
 	"github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func TestProviderPackage(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "Provider package suite")
+	ginkgo.RunSpecs(t, "Generic Provider package suite")
 }

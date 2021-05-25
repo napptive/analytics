@@ -6,38 +6,56 @@ import (
 	"time"
 )
 
+// BigQueryConfig with the bigQuery provider configuration
 type BigQueryConfig struct {
-	ProjectID       string
+	// ProjectID with the GKE project identifier
+	ProjectID string
+	// Schema with the BigQuery Schema
+	Schema string
+	// Table with the BigQuery table name
+	Table string
+	// CredentialsPath with the Service Account credentials file
 	CredentialsPath string
-	LoopTime        time.Duration
+	// SendingTime is the time between database inserts
+	SendingTime time.Duration
 }
 
-func NewBigQueryConfig(projectId string, credentialsPath string, loopTime time.Duration) BigQueryConfig {
+func NewBigQueryConfig(projectId string, schema string, table string, credentialsPath string, loopTime time.Duration) BigQueryConfig {
 	return BigQueryConfig{
 		ProjectID:       projectId,
+		Schema:          schema,
+		Table:           table,
 		CredentialsPath: credentialsPath,
-		LoopTime:        loopTime,
+		SendingTime:     loopTime,
 	}
 }
 
 func (bqc *BigQueryConfig) IsValid() error {
 	if bqc.ProjectID == "" {
-		return nerrors.NewFailedPreconditionError("projectID mus be filled")
+		return nerrors.NewFailedPreconditionError("ProjectID mus be filled")
+	}
+	if bqc.Schema == "" {
+		return nerrors.NewFailedPreconditionError("Schema mus be filled")
+	}
+	if bqc.Table == "" {
+		return nerrors.NewFailedPreconditionError("Table mus be filled")
 	}
 	if bqc.CredentialsPath == "" {
-		return nerrors.NewFailedPreconditionError("credentials path must be informed")
+		return nerrors.NewFailedPreconditionError("CredentialsPath path must be informed")
 	}
-	if bqc.LoopTime <= 0 {
-		return nerrors.NewFailedPreconditionError("loopTime mus be filled")
+	if bqc.SendingTime <= 0 {
+		return nerrors.NewFailedPreconditionError("SendingTime mus be filled")
 	}
 	return nil
 }
 
-func (bqc *BigQueryConfig) Print () {
+func (bqc *BigQueryConfig) Print() {
 	// Use logger to print the configuration
 	log.Info().
 		Str("ProjectID", bqc.ProjectID).
+		Str("Schema", bqc.Schema).
+		Str("Table", bqc.Table).
 		Str("CredentialsPath", bqc.CredentialsPath).
-		Dur("LoopTime",bqc.LoopTime).
+		Dur("LoopTime", bqc.SendingTime).
 		Msg("BigQuery config")
 }

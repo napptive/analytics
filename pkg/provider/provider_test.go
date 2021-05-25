@@ -47,7 +47,15 @@ var _ = ginkgo.Describe("Provider test", func() {
 			gomega.Expect(err).To(gomega.Succeed())
 			time.Sleep(cfg.SendingTime/3)
 		}
+	})
+	ginkgo.It("should be able to add an operation", func() {
 
-
+		op := utils.GenerateTestOperation()
+		for i := 0; i <= 10; i++ {
+			err := provider.Send(op)
+			gomega.Expect(err).To(gomega.Succeed())
+		}
+		err := provider.Flush()
+		gomega.Expect(err).To(gomega.Succeed())
 	})
 })

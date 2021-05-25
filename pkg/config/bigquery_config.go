@@ -32,19 +32,19 @@ func NewBigQueryConfig(projectId string, schema string, table string, credential
 
 func (bqc *BigQueryConfig) IsValid() error {
 	if bqc.ProjectID == "" {
-		return nerrors.NewFailedPreconditionError("ProjectID mus be filled")
+		return nerrors.NewFailedPreconditionError("ProjectID must be filled")
 	}
 	if bqc.Schema == "" {
-		return nerrors.NewFailedPreconditionError("Schema mus be filled")
+		return nerrors.NewFailedPreconditionError("Schema must be filled")
 	}
 	if bqc.Table == "" {
-		return nerrors.NewFailedPreconditionError("Table mus be filled")
+		return nerrors.NewFailedPreconditionError("Table must be filled")
 	}
 	if bqc.CredentialsPath == "" {
 		return nerrors.NewFailedPreconditionError("CredentialsPath path must be informed")
 	}
 	if bqc.SendingTime <= 0 {
-		return nerrors.NewFailedPreconditionError("SendingTime mus be filled")
+		return nerrors.NewFailedPreconditionError("SendingTime must be filled")
 	}
 	return nil
 }

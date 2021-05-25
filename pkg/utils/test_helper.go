@@ -35,24 +35,6 @@ func RunIntegrationTests(id string) bool {
 	return runIntegration == id
 }
 
-// GenerateLoginData returns a random LoginData
-func GenerateTestLoginData() entities.LoginData {
-	return entities.LoginData{
-		Timestamp: time.Now(),
-		UserID:    xid.New().String(),
-		Method:    "CLI",
-	}
-}
-
-// GenerateOperationData returns a random OperationData
-func GenerateTestOperationData() entities.OperationData {
-	return entities.OperationData{
-		Timestamp: time.Now(),
-		UserID:    xid.New().String(),
-		Operation: "PEPE",
-	}
-}
-
 func GenerateTestOperation() entities.Operation {
 	return entities.Operation{
 		Timestamp: time.Now(),

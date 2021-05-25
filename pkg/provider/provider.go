@@ -18,6 +18,8 @@ const databaseTimeout = time.Second * 10
 type Provider interface {
 	// Send inserts the data in the database
 	Send(data entities.Operation) error
+	// Flush flush the data
+	Flush() error
 }
 
 // BigQueryProvider with a provider that stores the operation information in bigquery
@@ -70,6 +72,10 @@ func (bq *BigQueryProvider) Send(operation entities.Operation) error {
 	bq.Cache = append(bq.Cache, operation)
 
 	return nil
+}
+
+func (bq *BigQueryProvider) Flush() error {
+	return bq.SendCacheOperation()
 }
 
 // LaunchSendingLoop launch a loop to insert the cache data in the database

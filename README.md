@@ -10,6 +10,8 @@ For now, only BigQuery provider is implemented, but it is too easy to add provid
 type Provider interface {
 	// Send inserts the data in the database
 	Send(data entities.Operation) error
+	// Flush flush the data
+	Flush() error
 }
 ```
 

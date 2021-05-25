@@ -16,8 +16,8 @@
 package interceptors
 
 import (
-	"github.com/napptive/analytics/pkg/analytics"
 	"github.com/napptive/analytics/pkg/entities"
+	"github.com/napptive/analytics/pkg/provider"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"time"
@@ -25,13 +25,13 @@ import (
 	"context"
 )
 
-func WithServerOpInterceptor(client analytics.Provider) grpc.ServerOption {
+func WithServerOpInterceptor(client provider.Provider) grpc.ServerOption {
 	return grpc.UnaryInterceptor(OpInterceptor(client))
 
 }
 
 // OpInterceptor sends the operation info call to the analytics provider
-func OpInterceptor(client analytics.Provider) grpc.UnaryServerInterceptor {
+func OpInterceptor(client provider.Provider) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context,
 		req interface{},
 		info *grpc.UnaryServerInfo,
@@ -43,7 +43,7 @@ func OpInterceptor(client analytics.Provider) grpc.UnaryServerInterceptor {
 		}
 
 		// Send the data to bigQuery
-		if err = client.SendOperationData(entities.OperationData{
+		if err = client.Send(entities.Operation{
 			Timestamp: time.Now(),
 			UserID:    userID,
 			Operation: info.FullMethod,

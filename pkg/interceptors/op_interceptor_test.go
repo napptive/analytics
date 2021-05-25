@@ -18,7 +18,7 @@ package interceptors
 import (
 	"context"
 	"fmt"
-	"github.com/napptive/analytics/pkg/analytics"
+	bqprovider "github.com/napptive/analytics/pkg/provider"
 	"github.com/napptive/analytics/pkg/utils"
 	"github.com/napptive/grpc-ping-go"
 	"github.com/onsi/ginkgo"
@@ -56,7 +56,7 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 	var lis *bufconn.Listener
 
 	var client grpc_ping_go.PingServiceClient
-	var provider analytics.Provider
+	var provider bqprovider.Provider
 	var proError error
 
 	ginkgo.BeforeEach(func() {
@@ -65,7 +65,7 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 		// Create provider
 		cfg := utils.GetBigQueryConfig()
 
-		provider, proError = analytics.NewBigQueryProvider(*cfg)
+		provider, proError = bqprovider.NewBigQueryProvider(*cfg)
 		gomega.Expect(proError).Should(gomega.Succeed())
 
 		s = grpc.NewServer(WithServerOpInterceptor(provider))
@@ -90,7 +90,7 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 	})
 	ginkgo.AfterEach(func() {
 		// Flush data
-		err := provider.(*analytics.BigQueryProvider).SendOperationCache()
+		err := provider.Flush()
 		gomega.Expect(err).Should(gomega.Succeed())
 		s.Stop()
 		lis.Close()

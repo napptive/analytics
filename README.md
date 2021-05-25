@@ -8,10 +8,8 @@ For now, only BigQuery provider is implemented, but it is too easy to add provid
 ```
 // Provider with an interface that defines the monitoring provider methods
 type Provider interface {
-	// SendLoginData puts a login in the database
-	SendLoginData(data entities.LoginData) error
-	// SendOperationData puts an operation data in the database
-	SendOperationData(data entities.OperationData) error
+	// Send inserts the data in the database
+	Send(data entities.Operation) error
 }
 ```
 
@@ -19,12 +17,25 @@ type Provider interface {
 
 1.Create a client
 ```
-func NewBigQueryProvider(projectID string, credentialsPath string, loopTime time.Duration) (Provider, error) {
+func NewBigQueryProvidercfg config.BigQueryConfig) (Provider, error) {
 ```
 where 
-- `projectID` is the GKE Project identifier
-- `credentialsPath` is the path of the credentials file. The service account credentials
-- `loopTime` is the waitting time to make inserts in the database. 
+```
+// BigQueryConfig with the bigQuery provider configuration
+type BigQueryConfig struct {
+	// ProjectID with the GKE project identifier
+	ProjectID string
+	// Schema with the BigQuery Schema
+	Schema string
+	// Table with the BigQuery table name
+	Table string
+	// CredentialsPath with the Service Account credentials file
+	CredentialsPath string
+	// SendingTime is the time between database inserts
+	SendingTime time.Duration
+}
+```
+- `SendingTime` is the waiting time to make inserts in the database. 
   The data is stored in a cache and sent every so often
 
 ---

@@ -37,7 +37,7 @@ func OpInterceptor(client provider.Provider) grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler) (interface{}, error) {
 
-		userID, err := GetUserIDFromContext(ctx)
+		userID, agent, err := ExtractDataFromContext(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -47,6 +47,7 @@ func OpInterceptor(client provider.Provider) grpc.UnaryServerInterceptor {
 			Timestamp: time.Now(),
 			UserID:    userID,
 			Operation: info.FullMethod,
+			Source:    agent,
 		}); err != nil {
 			log.Err(err).Msg("error sending analytics data")
 		}

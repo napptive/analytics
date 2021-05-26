@@ -16,8 +16,12 @@
 package utils
 
 import (
+	"context"
+	"github.com/napptive/analytics/pkg/config"
 	"github.com/napptive/analytics/pkg/entities"
+	"github.com/onsi/gomega"
 	"github.com/rs/xid"
+	"google.golang.org/grpc/metadata"
 	"os"
 	"time"
 )
@@ -31,20 +35,35 @@ func RunIntegrationTests(id string) bool {
 	return runIntegration == id
 }
 
-// GenerateLoginData returns a random LoginData
-func GenerateTestLoginData() entities.LoginData {
-	return entities.LoginData{
+func GenerateTestOperation() entities.Operation {
+	return entities.Operation{
 		Timestamp: time.Now(),
 		UserID:    xid.New().String(),
-		Method:    "CLI",
+		Operation: "test/operation",
 	}
 }
 
-// GenerateOperationData returns a random OperationData
-func GenerateTestOperationData() entities.OperationData {
-	return entities.OperationData{
-		Timestamp: time.Now(),
-		UserID:    xid.New().String(),
-		Operation: "Operation",
-	}
+func GenerateTestFullContext() context.Context {
+	md := metadata.New(map[string]string{"user_id": xid.New().String()})
+	return metadata.NewOutgoingContext(context.Background(), md)
 }
+
+func GetBigQueryConfig() *config.BigQueryConfig {
+	var credentialPath = os.Getenv("CREDENTIALS_PATH")
+	gomega.Expect(credentialPath).ShouldNot(gomega.BeEmpty())
+
+	var projectID = os.Getenv("PROJECT_ID")
+	gomega.Expect(projectID).ShouldNot(gomega.BeEmpty())
+
+	var schema = os.Getenv("SCHEMA")
+	gomega.Expect(schema).ShouldNot(gomega.BeEmpty())
+
+	var table = os.Getenv("TABLE")
+	gomega.Expect(table).ShouldNot(gomega.BeEmpty())
+
+
+	bqConfig := config.NewBigQueryConfig(projectID, schema, table, credentialPath, time.Second)
+
+	return &bqConfig
+}
+

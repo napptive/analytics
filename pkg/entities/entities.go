@@ -37,3 +37,12 @@ type OperationData struct {
 	Operation string
 }
 
+// Operation with the operation info to be stored
+type Operation struct {
+	// Timestamp with the event timestamp
+	Timestamp time.Time
+	// UserID with the user identifier
+	UserID string
+	// Operation with the data to store
+	Operation string
+}

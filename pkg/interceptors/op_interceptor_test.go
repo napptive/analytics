@@ -96,9 +96,22 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 		lis.Close()
 	})
 
-	ginkgo.It("should be able add ", func() {
+	ginkgo.It("should be able add an operation with the source", func() {
 
 		newCtx := utils.GenerateTestFullContext()
+
+		// Create a context with the token
+		request := grpc_ping_go.PingRequest{RequestNumber: 1}
+		response, err := client.Ping(newCtx, &request)
+		gomega.Expect(err).Should(gomega.Succeed())
+		gomega.Expect(response).ShouldNot(gomega.BeNil())
+		gomega.Expect(response.RequestNumber).Should(gomega.Equal(request.RequestNumber))
+		gomega.Expect(response.Data).ShouldNot(gomega.BeEmpty())
+
+	})
+	ginkgo.It("should be able add an operation without the source", func() {
+
+		newCtx := utils.GenerateTestContextWithoutAgent()
 
 		// Create a context with the token
 		request := grpc_ping_go.PingRequest{RequestNumber: 1}

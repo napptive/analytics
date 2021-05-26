@@ -17,26 +17,6 @@ package entities
 
 import "time"
 
-// LoginData with the login info stored
-type LoginData struct {
-	// Timestamp with the event timestamp
-	Timestamp time.Time
-	// UserID with the user identifier
-	UserID string
-	// Method with the login source (PAT, CLI, Web)
-	Method string
-}
-
-// OperationData with the operation info stored
-type OperationData struct {
-	// Timestamp with the event timestamp
-	Timestamp time.Time
-	// UserID with the user identifier
-	UserID string
-	// Operation with the name of the GRPC method
-	Operation string
-}
-
 // Operation with the operation info to be stored
 type Operation struct {
 	// Timestamp with the event timestamp
@@ -45,4 +25,6 @@ type Operation struct {
 	UserID string
 	// Operation with the data to store
 	Operation string
+	// Source with the source from where the operation was called
+	Source string
 }

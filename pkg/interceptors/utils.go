@@ -25,17 +25,26 @@ import (
 const (
 	// UserIdKey with the name of the key that will be injected in the context metadata corresponding to the user identifier.
 	UserIDKey = "user_id"
+	// AgentHeader with the key name for the agent payload.
+ 	AgentHeader = "agent"
 )
 
-func GetUserIDFromContext(ctx context.Context) (string, error) {
+// ExtractDataFromContext returns the userID and the agent
+// the userID is required, but the agent is not
+func ExtractDataFromContext(ctx context.Context) (string, string, error) {
 	// get the userId from the context
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return "", nerrors.NewInternalError("no metadata found").ToGRPC()
+		return "", "", nerrors.NewInternalError("no metadata found").ToGRPC()
 	}
 	userID, exists := md[UserIDKey]
 	if !exists {
-		return "", nerrors.NewInternalError("userId not found in metadata")
+		return "", "", nerrors.NewInternalError("userId not found in metadata")
 	}
-	return userID[0], nil
+	agentValue := ""
+	agent, exists := md[AgentHeader]
+	if exists {
+		agentValue = agent[0]
+	}
+	return userID[0], agentValue, nil
 }

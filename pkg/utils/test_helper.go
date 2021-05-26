@@ -44,6 +44,11 @@ func GenerateTestOperation() entities.Operation {
 }
 
 func GenerateTestFullContext() context.Context {
+	md := metadata.New(map[string]string{"user_id": xid.New().String(), "agent": "cli"})
+	return metadata.NewOutgoingContext(context.Background(), md)
+}
+
+func GenerateTestContextWithoutAgent() context.Context {
 	md := metadata.New(map[string]string{"user_id": xid.New().String()})
 	return metadata.NewOutgoingContext(context.Background(), md)
 }

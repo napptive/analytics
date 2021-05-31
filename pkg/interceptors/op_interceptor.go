@@ -55,3 +55,35 @@ func OpInterceptor(client provider.Provider) grpc.UnaryServerInterceptor {
 		return handler(ctx, req)
 	}
 }
+
+func WithServerOpStreamInterceptor(client provider.Provider) grpc.ServerOption {
+	return grpc.StreamInterceptor(OpStreamInterceptor(client))
+
+}
+
+// OpStreamInterceptor verifies the JWT token and adds the claim information in the context
+func OpStreamInterceptor(client provider.Provider) grpc.StreamServerInterceptor {
+	return func(srv interface{},
+		stream grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler) error {
+
+		ctx := stream.Context()
+		userID, agent, err := ExtractDataFromContext(ctx)
+		if err != nil {
+			return err
+		}
+
+		// Send the data to bigQuery
+		if err = client.Send(entities.Operation{
+			Timestamp: time.Now(),
+			UserID:    userID,
+			Operation: info.FullMethod,
+			Source:    agent,
+		}); err != nil {
+			log.Err(err).Msg("error sending analytics data")
+		}
+
+		return handler(srv, stream)
+	}
+}

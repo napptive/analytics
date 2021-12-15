@@ -18,15 +18,17 @@ package interceptors
 import (
 	"context"
 	"fmt"
+	"net"
+
 	bqprovider "github.com/napptive/analytics/pkg/provider"
 	"github.com/napptive/analytics/pkg/utils"
-	"github.com/napptive/grpc-ping-go"
+	grpc_ping_go "github.com/napptive/grpc-ping-go"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
-	"net"
 )
 
 const (
@@ -82,7 +84,7 @@ var _ = ginkgo.Context("Operation interceptor", func() {
 		conn, err := grpc.DialContext(context.Background(), "bufnet",
 			grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 				return lis.Dial()
-			}), grpc.WithInsecure())
+			}), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		gomega.Expect(err).Should(gomega.Succeed())
 
 		client = grpc_ping_go.NewPingServiceClient(conn)

@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.14.0
 	cloud.google.com/go/storage v1.13.0 // indirect
 	github.com/napptive/grpc-ping-go v0.1.0
-	github.com/napptive/nerrors v1.0.0
+	github.com/napptive/nerrors v1.0.1
 	github.com/onsi/ginkgo v1.16.2
 	github.com/onsi/gomega v1.12.0
 	github.com/rs/xid v1.2.1
